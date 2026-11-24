@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hf-jobs - Run Workloads on Hugging Face Jobs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #ffd21e;
+            background: #000;
+            padding: 20px;
+            margin: -40px -40px 30px -40px;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        h2 {
+            color: #1e1e1e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ffd21e;
+        }
+        
+        h3 {
+            color: #555;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            background: #f9f9f9;
+            padding: 20px;
+            border-left: 4px solid #ffd21e;
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+        
+        .file-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .file-list li {
+            padding: 12px;
+            margin: 8px 0;
+            background: #f9f9f9;
+            border-radius: 4px;
+            border-left: 3px solid #ffd21e;
+            transition: background 0.2s;
+        }
+        
+        .file-list li:hover {
+            background: #f0f0f0;
+        }
+        
+        .file-list a {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: 500;
+            display: block;
+        }
+        
+        .file-list a:hover {
+            text-decoration: underline;
+        }
+        
+        .file-path {
+            color: #666;
+            font-size: 0.9em;
+            font-family: 'Monaco', 'Courier New', monospace;
+            margin-top: 4px;
+        }
+        
+        .file-description {
+            color: #777;
+            font-size: 0.9em;
+            margin-top: 4px;
+            font-style: italic;
+        }
+        
+        .metadata {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+        }
+        
+        .metadata p {
+            margin: 5px 0;
+        }
+        
+        .metadata strong {
+            color: #333;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Agent Skill : hf-jobs</h1>
+        
+        <div class="description">
+            <p><strong>Run any workload on Hugging Face Jobs.</strong></p>
+            <p>Use this skill when you want to run GPU/CPU workloads (batch inference, synthetic data generation, dataset stats, experiments) on Hugging Face Jobs, with correct token handling and result persistence back to the Hub.</p>
+        </div>
+        
+        <div class="metadata">
+            <p><strong>Skill Name:</strong> hf-jobs</p>
+            <p><strong>Main Documentation:</strong> <a href="jobs/SKILL.md">jobs/SKILL.md</a></p>
+            <p><strong>Scripts Directory:</strong> <code>jobs/scripts/</code></p>
+            <p><strong>References Directory:</strong> <code>jobs/references/</code></p>
+        </div>
+        
+        <div class="section">
+            <h2>Overview</h2>
+            <p>This skill focuses on running real workloads via Hugging Face Jobs. It includes ready-to-run UV scripts and guides for authentication (HF tokens), secrets vs env vars, timeouts, hardware selection, and pushing results to the Hub.</p>
+        </div>
+
+        <div class="section">
+            <h2>Core Documentation</h2>
+            <ul class="file-list">
+                <li>
+                    <a href="jobs/SKILL.md">SKILL.md</a>
+                    <div class="file-path">jobs/SKILL.md</div>
+                    <div class="file-description">Complete skill documentation (how to submit jobs, tokens/secrets, timeouts, persistence, and how to use the bundled scripts)</div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>References</h2>
+            <ul class="file-list">
+                <li>
+                    <a href="jobs/references/token_usage.md">token_usage.md</a>
+                    <div class="file-path">jobs/references/token_usage.md</div>
+                    <div class="file-description">Token best practices: secrets vs env, permissions, common errors (401/403), and secure patterns</div>
+                </li>
+                <li>
+                    <a href="jobs/references/hub_saving.md">hub_saving.md</a>
+                    <div class="file-path">jobs/references/hub_saving.md</div>
+                    <div class="file-description">How to persist results: push datasets/models/files to the Hub (ephemeral job filesystem)</div>
+                </li>
+                <li>
+                    <a href="jobs/references/hardware_guide.md">hardware_guide.md</a>
+                    <div class="file-path">jobs/references/hardware_guide.md</div>
+                    <div class="file-description">Flavor selection guidance for CPU/GPU/TPU workloads</div>
+                </li>
+                <li>
+                    <a href="jobs/references/troubleshooting.md">troubleshooting.md</a>
+                    <div class="file-path">jobs/references/troubleshooting.md</div>
+                    <div class="file-description">Common failure modes (timeouts, missing deps, OOM, auth) and fixes</div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Scripts</h2>
+            <ul class="file-list">
+                <li>
+                    <a href="jobs/scripts/generate-responses.py">generate-responses.py</a>
+                    <div class="file-path">jobs/scripts/generate-responses.py</div>
+                    <div class="file-description">vLLM batch generation: load prompts/messages from a dataset, generate responses, push dataset + card to Hub</div>
+                </li>
+                <li>
+                    <a href="jobs/scripts/cot-self-instruct.py">cot-self-instruct.py</a>
+                    <div class="file-path">jobs/scripts/cot-self-instruct.py</div>
+                    <div class="file-description">CoT Self-Instruct synthetic data generation (reasoning/instruction) + optional filtering, pushes dataset + card</div>
+                </li>
+                <li>
+                    <a href="jobs/scripts/finepdfs-stats.py">finepdfs-stats.py</a>
+                    <div class="file-path">jobs/scripts/finepdfs-stats.py</div>
+                    <div class="file-description">Polars streaming stats over Hub parquet (finepdfs-edu); optional upload of computed stats to a dataset repo</div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Northline Studio</title>
+    <meta
+      name="description"
+      content="Northline Studio builds fast, conversion-focused websites for startups and product teams."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="bg-noise" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <div class="container nav">
+        <a href="#" class="brand">Northline</a>
+        <nav>
+          <a href="#work">Work</a>
+          <a href="#services">Services</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero container">
+        <p class="kicker">Design + Engineering Studio</p>
+        <h1>
+          Websites that look sharp,
+          <span>load instantly, and convert.</span>
+        </h1>
+        <p class="lede">
+          We turn rough ideas into memorable web experiences with clear
+          messaging, high-performance frontend architecture, and launch-ready
+          deployment pipelines.
+        </p>
+        <div class="hero-actions">
+          <a href="#contact" class="btn btn-primary">Start a project</a>
+          <a href="#work" class="btn btn-ghost">See latest builds</a>
+        </div>
+      </section>
+
+      <section id="work" class="container work">
+        <article class="card reveal">
+          <p class="tag">B2B SaaS</p>
+          <h3>Pulseboard</h3>
+          <p>Lifted trial conversion 31% with a product-led homepage revamp.</p>
+        </article>
+        <article class="card reveal">
+          <p class="tag">Creator Tools</p>
+          <h3>Lumen Studio</h3>
+          <p>
+            Rebuilt marketing pages on modern SSR stack, cutting TTFB in half.
+          </p>
+        </article>
+        <article class="card reveal">
+          <p class="tag">Fintech</p>
+          <h3>Helio Pay</h3>
+          <p>Shipped launch site and docs hub in 10 days, ready for scale.</p>
+        </article>
+      </section>
+
+      <section id="services" class="container services">
+        <h2>What we ship</h2>
+        <div class="service-grid">
+          <div class="service reveal">
+            <h3>Strategy + Messaging</h3>
+            <p>Offer clarity, brand voice, and a structure built to convert.</p>
+          </div>
+          <div class="service reveal">
+            <h3>UI Systems</h3>
+            <p>Reusable, accessible components that keep velocity high.</p>
+          </div>
+          <div class="service reveal">
+            <h3>Frontend Engineering</h3>
+            <p>Fast Core Web Vitals, resilient routing, and clean handoff.</p>
+          </div>
+          <div class="service reveal">
+            <h3>Launch + Optimization</h3>
+            <p>Analytics wiring, SEO baseline, and ongoing iteration support.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="container contact reveal">
+        <h2>Ready to launch?</h2>
+        <p>
+          Send a short brief and we’ll reply with a scope, timeline, and build
+          plan.
+        </p>
+        <a class="btn btn-primary" href="mailto:hello@northline.studio"
+          >hello@northline.studio</a
+        >
+      </section>
+    </main>
+
+    <footer class="container site-footer">
+      <p>© <span id="year"></span> Northline Studio</p>
+    </footer>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MeuBolso — Controle Financeiro Pessoal</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%234f46e5'/%3E%3Cstop offset='100%25' stop-color='%2310b981'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='18' fill='url(%23g)'/%3E%3Crect x='14' y='20' width='36' height='26' rx='7' fill='none' stroke='white' stroke-width='4'/%3E%3Cpath d='M18 20v-2a6 6 0 0 1 6-6h16a4 4 0 0 1 4 4v4' fill='none' stroke='white' stroke-width='4' stroke-linecap='round'/%3E%3Crect x='36' y='28' width='15' height='10' rx='5' fill='white'/%3E%3Ccircle cx='42' cy='33' r='2.3' fill='%234f46e5'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Canvas para confetes de celebração -->
+  <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+  <!-- Barra superior -->
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="#overview" id="brand-home-link" aria-label="MeuBolso - Ir para Visão Geral">
+        <div class="brand-logo" aria-hidden="true">
+          <!-- Logo personalizada MeuBolso (carteira + moeda brilhante) -->
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="mbLogoGrad" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#4F46E5" />
+                <stop offset="55%" stop-color="#2563EB" />
+                <stop offset="100%" stop-color="#10B981" />
+              </linearGradient>
+              <linearGradient id="mbCoinGrad" x1="25" y1="7" x2="36" y2="18" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#FDE68A" />
+                <stop offset="100%" stop-color="#F59E0B" />
+              </linearGradient>
+            </defs>
+            <rect x="2" y="2" width="44" height="44" rx="14" fill="url(#mbLogoGrad)" />
+            <circle cx="31" cy="13" r="5.5" fill="url(#mbCoinGrad)" stroke="#FFFFFF" stroke-width="1.6" />
+            <path d="M11 19.5C11 17.0147 13.0147 15 15.5 15H32.5C34.9853 15 37 17.0147 37 19.5V32.5C37 34.9853 34.9853 37 32.5 37H15.5C13.0147 37 11 34.9853 11 32.5V19.5Z" fill="rgba(255,255,255,0.16)" stroke="#FFFFFF" stroke-width="2.3" />
+            <path d="M27.5 23.5H38.5C39.6046 23.5 40.5 24.3954 40.5 25.5V27.5C40.5 28.6046 39.6046 29.5 38.5 29.5H27.5C25.8431 29.5 24.5 28.1569 24.5 26.5C24.5 24.8431 25.8431 23.5 27.5 23.5Z" fill="#FFFFFF" />
+            <circle cx="28" cy="26.5" r="1.6" fill="#4F46E5" />
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">Meu<span>Bolso</span></span>
+          <span class="brand-sub">Dinheiro livre sem complicação</span>
+        </div>
+      </a>
+
+      <nav class="nav-tabs" aria-label="Seções principais">
+        <button class="nav-tab active" data-tab="overview" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+          <span>Visão Geral</span>
+        </button>
+        <button class="nav-tab" data-tab="commitments" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></svg>
+          <span>Contas &amp; Parcelas</span>
+        </button>
+        <button class="nav-tab" data-tab="transactions" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
+          <span>Lançamentos</span>
+        </button>
+        <button class="nav-tab" data-tab="goals" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z"/><path d="M2 9v1c0 1.1.9 2 2 2h1"/><path d="M16 11h.01"/></svg>
+          <span>Metas</span>
+        </button>
+      </nav>
+
+      <div class="topbar-actions">
+        <div class="month-picker" aria-label="Selecionar mês">
+          <button id="prev-month-btn" class="icon-btn" type="button" title="Mês anterior" aria-label="Mês anterior">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <span id="current-month-label" class="month-label">Novembro 2026</span>
+          <button id="next-month-btn" class="icon-btn" type="button" title="Próximo mês" aria-label="Próximo mês">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+
+        <button id="viewport-toggle-btn" class="icon-btn preview-toggle-btn" type="button" title="Visualizar em modo Celular" aria-label="Alternar pré-visualização Desktop e Celular" aria-pressed="false">
+          <svg class="icon-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+          <svg class="icon-desktop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>
+        </button>
+
+        <button id="theme-toggle-btn" class="icon-btn" type="button" title="Alternar modo claro/escuro" aria-label="Alternar tema">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </button>
+
+        <button id="data-menu-btn" class="icon-btn" type="button" title="Backup, ajuda e configurações" aria-label="Opções e backup">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+
+        <button id="open-new-tx-btn" class="btn btn-primary" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          <span>Novo Lançamento</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    <!-- Banner amigável para modo exemplo -->
+    <div id="demo-banner" class="demo-banner hidden" role="status">
+      <div class="demo-banner-text">
+        <span class="demo-badge">Exemplo ativo</span>
+        <span>Você está vendo dados de demonstração para explorar o sistema. Tudo fica salvo só no seu navegador.</span>
+      </div>
+      <div class="demo-banner-actions">
+        <button id="clear-demo-btn" class="btn btn-sm btn-outline" type="button">Começar do zero</button>
+        <button id="dismiss-demo-banner-btn" class="icon-btn icon-btn-sm" type="button" title="Fechar aviso" aria-label="Fechar aviso">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 1: VISÃO GERAL -->
+    <section id="tab-overview" class="tab-panel active">
+      <div class="welcome-row">
+        <div>
+          <h1 class="page-title">Resumo de <span id="overview-month-title">Novembro</span></h1>
+          <p class="page-subtitle">Veja quanto já saiu, o que ainda falta pagar e qual é o seu dinheiro livre de verdade.</p>
+        </div>
+        <div class="quick-actions">
+          <button id="quick-income-btn" class="btn btn-income-soft" type="button">+ Entrada</button>
+          <button id="quick-expense-btn" class="btn btn-expense-soft" type="button">- Despesa</button>
+          <button id="open-cat-limits-btn" class="btn btn-outline btn-sm" type="button">🎯 Tetos por categoria</button>
+        </div>
+      </div>
+
+      <!-- Visão de Dinheiro Livre (Destaque principal) -->
+      <article class="card free-cash-hero animate-in" style="--delay: 0ms">
+        <div class="free-cash-left">
+          <div class="free-cash-badges">
+            <span class="free-cash-tag">✨ Dinheiro Livre de Verdade</span>
+            <span id="free-cash-pill" class="status-pill status-good">Folga no mês</span>
+          </div>
+          <div id="metric-free-cash" class="free-cash-value">R$ 0,00</div>
+          <p id="metric-free-hint" class="free-cash-hint">
+            Isso é o que sobra depois de descontar gastos, contas e parcelas do mês.
+          </p>
+        </div>
+        <div class="free-cash-breakdown" aria-label="Conta do dinheiro livre">
+          <div class="breakdown-row">
+            <span>🏦 Saldo atual (na conta)</span>
+            <strong id="breakdown-bank-balance">R$ 0,00</strong>
+          </div>
+          <div class="breakdown-row">
+            <span>🧾 Contas ainda a pagar</span>
+            <strong id="breakdown-pending-bills" class="text-expense">- R$ 0,00</strong>
+          </div>
+          <div class="breakdown-row">
+            <span>💳 Parcelas ainda a pagar</span>
+            <strong id="breakdown-pending-inst" class="text-expense">- R$ 0,00</strong>
+          </div>
+        </div>
+      </article>
+
+      <!-- Alertas simples de desvio por categoria -->
+      <div id="category-alerts-box" class="alerts-stack hidden" aria-live="polite"></div>
+
+      <!-- Cards secundários de resumo -->
+      <div class="summary-grid">
+        <article class="card summary-card card-income animate-in" style="--delay: 60ms">
+          <div class="summary-top">
+            <span class="summary-label">Quanto entrou</span>
+            <span class="summary-icon icon-income" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
+            </span>
+          </div>
+          <div id="metric-income" class="summary-value text-income">R$ 0,00</div>
+          <p id="metric-income-count" class="summary-hint">0 entradas registradas</p>
+        </article>
+
+        <article class="card summary-card card-expense animate-in" style="--delay: 110ms">
+          <div class="summary-top">
+            <span class="summary-label">Total comprometido no mês</span>
+            <span class="summary-icon icon-expense" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+            </span>
+          </div>
+          <div id="metric-expense" class="summary-value text-expense">R$ 0,00</div>
+          <p id="metric-expense-count" class="summary-hint">Gastos avulsos + contas + parcelas</p>
+        </article>
+
+        <article class="card summary-card card-pending animate-in" style="--delay: 160ms">
+          <div class="summary-top">
+            <span class="summary-label">Contas &amp; Parcelas a pagar</span>
+            <span id="pending-count-pill" class="status-pill status-warn">0 pendentes</span>
+          </div>
+          <div id="metric-pending-total" class="summary-value">R$ 0,00</div>
+          <p id="metric-pending-hint" class="summary-hint">Tudo o que ainda vai vencer neste mês</p>
+        </article>
+      </div>
+
+      <!-- Barra de limite geral de gastos -->
+      <article class="card budget-card animate-in" style="--delay: 200ms">
+        <div class="budget-header">
+          <div>
+            <h2 class="card-title">Limite geral de gastos do mês</h2>
+            <p id="budget-subtitle" class="card-desc">Defina um teto para gastar com tranquilidade.</p>
+          </div>
+          <button id="edit-budget-btn" class="btn btn-sm btn-outline" type="button">Definir limite</button>
+        </div>
+        <div class="budget-progress-wrap">
+          <div class="progress-track progress-lg" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="budget-progressbar">
+            <div id="budget-progress-fill" class="progress-fill" style="width: 0%"></div>
+          </div>
+          <div class="budget-stats">
+            <span id="budget-used-text">R$ 0,00 comprometidos</span>
+            <span id="budget-pct-text" class="budget-pct">0%</span>
+            <span id="budget-limit-text">Limite: R$ 0,00</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Resumo rápido de Contas & Parcelas do mês -->
+      <div class="commitments-overview-grid">
+        <article class="card animate-in" style="--delay: 230ms">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">🧾 Contas do mês</h2>
+              <p class="card-desc">Marque o que já foi pago para atualizar o saldo real</p>
+            </div>
+            <button class="btn btn-sm btn-ghost" data-goto-tab="commitments" type="button">Gerenciar →</button>
+          </div>
+          <div id="overview-bills-list" class="compact-list"></div>
+        </article>
+
+        <article class="card animate-in" style="--delay: 260ms">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">💳 Parcelas deste mês</h2>
+              <p class="card-desc">Acompanhe em qual parcela cada compra está</p>
+            </div>
+            <button class="btn btn-sm btn-ghost" data-goto-tab="commitments" type="button">Ver todas →</button>
+          </div>
+          <div id="overview-installments-list" class="compact-list"></div>
+        </article>
+      </div>
+
+      <!-- Gráficos: Rosca por categoria + Barras dos últimos 6 meses -->
+      <div class="charts-grid">
+        <article class="card chart-card animate-in" style="--delay: 290ms">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Para onde foi meu dinheiro?</h2>
+              <p class="card-desc">Gastos, contas e parcelas por categoria (com tetos se definidos)</p>
+            </div>
+            <button id="chart-edit-limits-btn" class="btn btn-sm btn-outline" type="button">Tetos</button>
+          </div>
+          <div id="donut-chart-area" class="donut-layout"></div>
+        </article>
+
+        <article class="card chart-card animate-in" style="--delay: 320ms">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Últimos 6 meses</h2>
+              <p class="card-desc">Comparação entre entradas e total comprometido</p>
+            </div>
+            <div class="chart-legend-inline">
+              <span class="legend-dot-item"><i class="dot dot-income"></i>Entradas</span>
+              <span class="legend-dot-item"><i class="dot dot-expense"></i>Saídas</span>
+            </div>
+          </div>
+          <div id="bar-chart-area" class="bar-chart-wrap"></div>
+        </article>
+      </div>
+
+      <!-- Últimos lançamentos + Prévia de Metas -->
+      <div class="bottom-grid">
+        <article class="card animate-in" style="--delay: 350ms">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Últimos lançamentos avulsos</h2>
+              <p class="card-desc">Entradas e gastos do dia a dia no mês</p>
+            </div>
+            <button class="btn btn-sm btn-ghost" data-goto-tab="transactions" type="button">Ver todos →</button>
+          </div>
+          <div id="recent-transactions-list" class="tx-list"></div>
+        </article>
+
+        <article class="card animate-in" style="--delay: 380ms">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Meus cofrinhos</h2>
+              <p class="card-desc">Acompanhe suas metas de economia</p>
+            </div>
+            <button class="btn btn-sm btn-ghost" data-goto-tab="goals" type="button">Gerenciar →</button>
+          </div>
+          <div id="overview-goals-list" class="goals-mini-list"></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 2: CONTAS DO MÊS & PARCELAS -->
+    <section id="tab-commitments" class="tab-panel">
+      <div class="welcome-row">
+        <div>
+          <h1 class="page-title">Contas e Parcelas de <span id="commitments-month-title">Novembro</span></h1>
+          <p class="page-subtitle">Organize suas contas fixas mensais e acompanhe todas as compras parceladas.</p>
+        </div>
+        <div class="quick-actions">
+          <button id="open-new-bill-btn" class="btn btn-outline" type="button">+ Nova Conta do Mês</button>
+          <button id="open-new-inst-btn" class="btn btn-primary" type="button">+ Nova Compra Parcelada</button>
+        </div>
+      </div>
+
+      <div class="commitments-summary-strip">
+        <div class="card mini-stat-card">
+          <span class="summary-label">Total das Contas do Mês</span>
+          <strong id="bills-total-val" class="mini-stat-val">R$ 0,00</strong>
+          <span id="bills-status-sub" class="summary-hint">0 pagas · 0 pendentes</span>
+        </div>
+        <div class="card mini-stat-card">
+          <span class="summary-label">Parcelas neste Mês</span>
+          <strong id="inst-month-val" class="mini-stat-val">R$ 0,00</strong>
+          <span id="inst-active-sub" class="summary-hint">0 compras ativas</span>
+        </div>
+        <div class="card mini-stat-card">
+          <span class="summary-label">Total Restante Parcelado</span>
+          <strong id="inst-remaining-val" class="mini-stat-val">R$ 0,00</strong>
+          <span class="summary-hint">Soma das parcelas futuras em aberto</span>
+        </div>
+      </div>
+
+      <div class="commitments-columns">
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">🧾 Contas do Mês</h2>
+              <p class="card-desc">Aluguel, luz, internet, água e assinaturas fixas</p>
+            </div>
+            <button id="card-add-bill-btn" class="btn btn-sm btn-outline" type="button">+ Conta</button>
+          </div>
+          <div id="full-bills-list" class="commit-list"></div>
+        </article>
+
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">💳 Parcelas das Compras</h2>
+              <p class="card-desc">Veja quanto já pagou e quantas parcelas faltam</p>
+            </div>
+            <button id="card-add-inst-btn" class="btn btn-sm btn-outline" type="button">+ Parcelamento</button>
+          </div>
+          <div id="full-installments-list" class="commit-list"></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- SEÇÃO 3: TODOS OS LANÇAMENTOS -->
+    <section id="tab-transactions" class="tab-panel">
+      <div class="welcome-row">
+        <div>
+          <h1 class="page-title">Lançamentos de <span id="tx-month-title">Novembro</span></h1>
+          <p class="page-subtitle">Busque, filtre, edite ou apague entradas e gastos do dia a dia.</p>
+        </div>
+        <button id="tx-tab-new-btn" class="btn btn-primary" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          <span>Adicionar</span>
+        </button>
+      </div>
+
+      <article class="card filter-bar">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="tx-search-input" type="search" placeholder="Buscar por descrição (ex: mercado, restaurante, salário)..." />
+        </div>
+
+        <div class="filter-controls">
+          <div class="segmented" role="group" aria-label="Filtrar por tipo">
+            <button class="seg-btn active" data-filter-type="all" type="button">Todos</button>
+            <button class="seg-btn" data-filter-type="income" type="button">Entradas</button>
+            <button class="seg-btn" data-filter-type="expense" type="button">Saídas</button>
+          </div>
+
+          <select id="tx-category-filter" class="select-input" aria-label="Filtrar por categoria">
+            <option value="all">Todas as categorias</option>
+          </select>
+        </div>
+      </article>
+
+      <article class="card">
+        <div id="full-transactions-list" class="tx-list"></div>
+      </article>
+    </section>
+
+    <!-- SEÇÃO 4: METAS (COFRINHOS) -->
+    <section id="tab-goals" class="tab-panel">
+      <div class="welcome-row">
+        <div>
+          <h1 class="page-title">Meus Cofrinhos e Metas</h1>
+          <p class="page-subtitle">Guarde dinheiro aos poucos para o que é importante para você.</p>
+        </div>
+        <button id="open-new-goal-btn" class="btn btn-primary" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          <span>Nova Meta</span>
+        </button>
+      </div>
+
+      <div id="goals-grid" class="goals-grid"></div>
+    </section>
+  </main>
+
+  <!-- Navegação inferior para celular -->
+  <nav class="mobile-nav" aria-label="Menu rápido">
+    <button class="mobile-nav-btn active" data-tab="overview" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+      <span>Resumo</span>
+    </button>
+    <button class="mobile-nav-btn" data-tab="commitments" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></svg>
+      <span>Contas</span>
+    </button>
+    <button class="mobile-nav-btn" data-tab="transactions" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
+      <span>Extrato</span>
+    </button>
+    <button class="mobile-nav-btn" data-tab="goals" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2V5z"/><path d="M2 9v1c0 1.1.9 2 2 2h1"/></svg>
+      <span>Metas</span>
+    </button>
+  </nav>
+
+  <!-- MODAL: Novo / Editar Lançamento -->
+  <div id="tx-modal" class="modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="tx-modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="tx-modal-title" class="modal-title">Novo Lançamento</h2>
+        <button class="icon-btn close-modal-btn" data-close-modal="tx-modal" type="button" aria-label="Fechar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="tx-form" class="modal-form">
+        <input type="hidden" id="tx-edit-id" />
+
+        <div class="type-toggle" role="group" aria-label="Tipo de movimentação">
+          <button type="button" class="type-pill active-expense" data-tx-type="expense" id="type-pill-expense">
+            <span>💸</span> Saiu dinheiro (Despesa)
+          </button>
+          <button type="button" class="type-pill" data-tx-type="income" id="type-pill-income">
+            <span>💚</span> Entrou dinheiro (Receita)
+          </button>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="tx-amount">Valor (R$)</label>
+            <input id="tx-amount" type="number" step="0.01" min="0.01" placeholder="0,00" required />
+          </div>
+          <div class="form-group">
+            <label for="tx-date">Data</label>
+            <input id="tx-date" type="date" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="tx-description">O que foi?</label>
+          <input id="tx-description" type="text" maxlength="60" placeholder="Ex: Almoço fora, Supermercado, Salário..." required />
+        </div>
+
+        <div class="form-group">
+          <label>Categoria</label>
+          <div id="tx-category-chips" class="category-chips"></div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal="tx-modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="tx-submit-btn">Salvar lançamento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Nova / Editar Conta do Mês -->
+  <div id="bill-modal" class="modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="bill-modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="bill-modal-title" class="modal-title">Nova Conta do Mês</h2>
+        <button class="icon-btn close-modal-btn" data-close-modal="bill-modal" type="button" aria-label="Fechar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <form id="bill-form" class="modal-form">
+        <input type="hidden" id="bill-edit-id" />
+        <div class="form-group">
+          <label for="bill-title">Nome da conta</label>
+          <input id="bill-title" type="text" maxlength="50" placeholder="Ex: Aluguel, Internet, Conta de Luz..." required />
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="bill-amount">Valor mensal (R$)</label>
+            <input id="bill-amount" type="number" step="0.01" min="0.01" placeholder="150,00" required />
+          </div>
+          <div class="form-group">
+            <label for="bill-due-day">Dia do vencimento</label>
+            <input id="bill-due-day" type="number" min="1" max="31" value="10" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Categoria</label>
+          <div id="bill-category-chips" class="category-chips"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal="bill-modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar conta</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Nova / Editar Compra Parcelada -->
+  <div id="inst-modal" class="modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="inst-modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="inst-modal-title" class="modal-title">Nova Compra Parcelada</h2>
+        <button class="icon-btn close-modal-btn" data-close-modal="inst-modal" type="button" aria-label="Fechar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <form id="inst-form" class="modal-form">
+        <input type="hidden" id="inst-edit-id" />
+        <div class="form-group">
+          <label for="inst-title">O que você parcelou?</label>
+          <input id="inst-title" type="text" maxlength="50" placeholder="Ex: Celular, Geladeira, Tênis, Curso..." required />
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="inst-parcel-amount">Valor da parcela (R$)</label>
+            <input id="inst-parcel-amount" type="number" step="0.01" min="0.01" placeholder="180,00" required />
+          </div>
+          <div class="form-group">
+            <label for="inst-total-count">Quantas parcelas?</label>
+            <input id="inst-total-count" type="number" min="2" max="72" value="6" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inst-start-month">Mês da 1ª parcela</label>
+          <input id="inst-start-month" type="month" required />
+          <small id="inst-preview-hint" class="field-hint"></small>
+        </div>
+        <div class="form-group">
+          <label>Categoria</label>
+          <div id="inst-category-chips" class="category-chips"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal="inst-modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar parcelamento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Tetos de Alerta por Categoria -->
+  <div id="cat-limits-modal" class="modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="cat-limits-modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="cat-limits-modal-title" class="modal-title">Tetos de Alerta por Categoria</h2>
+        <button class="icon-btn close-modal-btn" data-close-modal="cat-limits-modal" type="button" aria-label="Fechar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <form id="cat-limits-form" class="modal-form">
+        <p class="modal-helper">Defina um teto mensal para as categorias que você quer vigiar (deixe vazio ou 0 para não alertar).</p>
+        <div id="cat-limits-fields" class="cat-limits-grid"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal="cat-limits-modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar tetos</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Nova / Editar Meta -->
+  <div id="goal-modal" class="modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="goal-modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="goal-modal-title" class="modal-title">Nova Meta</h2>
+        <button class="icon-btn close-modal-btn" data-close-modal="goal-modal" type="button" aria-label="Fechar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="goal-form" class="modal-form">
+        <input type="hidden" id="goal-edit-id" />
+
+        <div class="form-group">
+          <label for="goal-title">Nome da meta</label>
+          <input id="goal-title" type="text" maxlength="45" placeholder="Ex: Reserva de emergência, Viagem, Celular..." required />
+        </div>
+
+        <div class="form-group">
+          <label>Escolha um ícone</label>
+          <div id="goal-emoji-picker" class="emoji-picker">
+            <button type="button" class="emoji-btn active" data-emoji="🛡️">🛡️</button>
+            <button type="button" class="emoji-btn" data-emoji="✈️">✈️</button>
+            <button type="button" class="emoji-btn" data-emoji="🏠">🏠</button>
+            <button type="button" class="emoji-btn" data-emoji="🚗">🚗</button>
+            <button type="button" class="emoji-btn" data-emoji="💻">💻</button>
+            <button type="button" class="emoji-btn" data-emoji="🎓">🎓</button>
+            <button type="button" class="emoji-btn" data-emoji="🎯">🎯</button>
+            <button type="button" class="emoji-btn" data-emoji="🎁">🎁</button>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="goal-target">Quanto quer juntar (R$)</label>
+            <input id="goal-target" type="number" step="0.01" min="1" placeholder="5000,00" required />
+          </div>
+          <div class="form-group">
+            <label for="goal-saved">Já tem guardado (R$)</label>
+            <input id="goal-saved" type="number" step="0.01" min="0" value="0" required />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal="goal-modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar meta</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Guardar valor na meta -->
+  <div id="deposit-modal" class="modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="deposit-modal-title">
+    <div class="modal-card modal-card-sm">
+      <div class="modal-header">
+        <h2 id="deposit-modal-title" class="modal-title">Guardar no cofrinho</h2>
+        <button class="icon-btn close-modal-btn" data-close-modal="deposit-modal" type="button" aria-label="Fechar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <form id="deposit-form" class="modal-form">
+        <input type="hidden" id="deposit-goal-id" />
+        <p id="deposit-goal-name" class="modal-helper"></p>
+        <div class="form-group">
+          <label for="deposit-amount">Valor a guardar (R$)</label>
+          <input id="deposit-amount" type="number" step="0.01" min="0.01" placeholder="100,00" required />
+        </div>
+        <div class="quick-amounts">
+          <button type="button" class="chip-btn" data-quick-deposit="50">+ R$ 50</button>
+          <button type="button" class="chip-btn" data-quick-deposit="100">+ R$ 100</button>
+          <button type="button" class="chip-btn" data-quick-deposit="250">+ R$ 250</button>
+          <button type="button" class="chip-btn" data-quick-deposit="500">+ R$ 500</button>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal="deposit-modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar dinheiro</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Definir limite mensal -->
+  <div id="budget-modal" class="modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="budget-modal-title">
+    <div class="modal-card modal-card-sm">
+      <div class="modal-header">
+        <h2 id="budget-modal-title" class="modal-title">Limite geral do mês</h2>
+        <button class="icon-btn close-modal-btn" data-close-modal="budget-modal" type="button" aria-label="Fechar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <form id="budget-form" class="modal-form">
+        <p class="modal-helper">Escolha o valor máximo total (avulsos + contas + parcelas) que você pretende gastar por mês.</p>
+        <div class="form-group">
+          <label for="budget-input">Limite mensal (R$)</label>
+          <input id="budget-input" type="number" step="1" min="0" placeholder="3800" required />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal="budget-modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar limite</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Dados, Backup & Ajuda -->
+  <div id="data-modal" class="modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="data-modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="data-modal-title" class="modal-title">Backup e Configurações</h2>
+        <button class="icon-btn close-modal-btn" data-close-modal="data-modal" type="button" aria-label="Fechar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="settings-list">
+        <div class="settings-item">
+          <div>
+            <strong>Como funciona?</strong>
+            <p>Seus lançamentos, contas, parcelas, tetos e metas ficam salvos automaticamente neste navegador.</p>
+          </div>
+        </div>
+
+        <div class="settings-item">
+          <div>
+            <strong>Exportar planilha (CSV)</strong>
+            <p>Baixe todos os lançamentos para abrir no Excel ou Google Planilhas.</p>
+          </div>
+          <button id="export-csv-btn" class="btn btn-sm btn-outline" type="button">Baixar CSV</button>
+        </div>
+
+        <div class="settings-item">
+          <div>
+            <strong>Fazer backup completo (JSON)</strong>
+            <p>Salve uma cópia de segurança para restaurar em outro computador.</p>
+          </div>
+          <button id="export-json-btn" class="btn btn-sm btn-outline" type="button">Salvar backup</button>
+        </div>
+
+        <div class="settings-item">
+          <div>
+            <strong>Restaurar backup</strong>
+            <p>Carregue um arquivo .json salvo anteriormente.</p>
+          </div>
+          <label class="btn btn-sm btn-outline file-btn">
+            Escolher arquivo
+            <input id="import-json-input" type="file" accept=".json,application/json" hidden />
+          </label>
+        </div>
+
+        <div class="settings-item settings-item-danger">
+          <div>
+            <strong>Dados de exemplo ou limpar tudo</strong>
+            <p>Restaure o exemplo inicial para testar ou apague todos os dados para começar do zero.</p>
+          </div>
+          <div class="settings-btn-group">
+            <button id="load-demo-btn" class="btn btn-sm btn-outline" type="button">Carregar exemplo</button>
+            <button id="wipe-all-btn" class="btn btn-sm btn-danger-soft" type="button">Apagar tudo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast de feedback / desfazer -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- No frame may navigate anywhere: blocks the narrator frame from
+       navigating itself (its srcdoc load is exempt). See app.js. -->
+  <meta http-equiv="Content-Security-Policy" content="frame-src 'none'; child-src 'none'">
+  <title>Swarm</title>
+  <script src="/preload.js"></script>
+  <!-- Google Sans Flex (the Hub's UI face, same axes as the Hub) and Google Sans Code. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:ROND,opsz,slnt,wdth,wght@0..100,6..144,-10..0,92..100,100..1000&family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&display=swap">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/hive.css">
+</head>
+<body>
+  <!-- Loading: a skeleton of the board, so the pane never flashes empty. -->
+  <div id="loading" class="loading" data-testid="swarm-loading" aria-live="polite" aria-busy="true">
+    <div class="skel-header">
+      <span class="skel skel-line" style="width: 46%; height: 12px"></span>
+      <span class="skel skel-line" style="width: 28%"></span>
+    </div>
+    <div class="skel-tabs">
+      <span class="skel skel-tab"></span><span class="skel skel-tab"></span><span class="skel skel-tab"></span><span class="skel skel-tab"></span>
+    </div>
+    <div class="skel-rows" aria-hidden="true">
+      <div class="skel-stack"><span class="skel skel-line" style="width: 22%"></span><span class="skel skel-line" style="width: 88%"></span><span class="skel skel-line" style="width: 62%"></span></div>
+      <div class="skel-stack"><span class="skel skel-line" style="width: 18%"></span><span class="skel skel-line" style="width: 74%"></span></div>
+      <div class="skel-stack"><span class="skel skel-line" style="width: 26%"></span><span class="skel skel-line" style="width: 92%"></span><span class="skel skel-line" style="width: 48%"></span></div>
+    </div>
+    <p class="loading-caption">Looking for this conversation's swarm…</p>
+  </div>
+
+  <div id="board" class="board hidden" data-testid="swarm-board">
+    <header class="header">
+      <div class="header-row">
+        <h1 id="swarm-title" class="swarm-title" data-testid="swarm-title"></h1>
+        <span id="live" class="live" role="status" title="Updates automatically" data-testid="swarm-live">
+          <span class="live-dot" aria-hidden="true"></span><span id="live-label" class="live-label">Live</span>
+        </span>
+      </div>
+      <div id="swarm-meta" class="meta hidden" data-testid="swarm-meta"></div>
+      <nav class="tabs" role="tablist" aria-label="Swarm views" data-testid="swarm-tabs">
+        <button type="button" role="tab" id="tabbtn-overview" aria-controls="tab-overview" aria-selected="false" tabindex="-1" data-tab="overview" class="tab hidden" data-testid="swarm-tab-overview">Overview<span id="tab-badge-overview" class="tab-badge hidden" data-testid="swarm-tab-badge-overview"></span></button>
+        <button type="button" role="tab" id="tabbtn-feed" aria-controls="tab-feed" aria-selected="true" data-tab="feed" class="tab active" data-testid="swarm-tab-feed">Board<span id="tab-count-feed" class="tab-count" data-testid="swarm-tab-count-feed"></span></button>
+        <button type="button" role="tab" id="tabbtn-members" aria-controls="tab-members" aria-selected="false" tabindex="-1" data-tab="members" class="tab" data-testid="swarm-tab-members">Members<span id="tab-count-members" class="tab-count" data-testid="swarm-tab-count-members"></span></button>
+        <button type="button" role="tab" id="tabbtn-graph" aria-controls="tab-graph" aria-selected="false" tabindex="-1" data-tab="graph" class="tab hidden" data-testid="swarm-tab-graph">Graph</button>
+        <button type="button" role="tab" id="tabbtn-raw" aria-controls="tab-raw" aria-selected="false" tabindex="-1" data-tab="raw" class="tab hidden" data-testid="swarm-tab-raw">Raw</button>
+      </nav>
+    </header>
+
+    <main class="main">
+      <!-- Overview: chrome (trusted, rendered by app.js) around the narrator's
+           view, which runs in a sandboxed frame or as the plain view. Hidden
+           (tab and all) until the swarm has a view.json or view.html. -->
+      <section id="tab-overview" class="tab-body" role="tabpanel" aria-labelledby="tabbtn-overview" data-testid="swarm-overview">
+        <div id="ov-status" class="ov-status" data-testid="swarm-overview-status"></div>
+        <div id="ov-system" class="ov-system hidden" role="list" aria-label="System alerts" data-testid="swarm-overview-system"></div>
+        <div id="ov-notice" class="ov-notice hidden" role="status" data-testid="swarm-overview-notice"></div>
+        <div id="ov-label" class="ov-label hidden" data-testid="swarm-overview-label">
+          <span class="ov-label-text">overview · from the narrator’s notes</span>
+          <span class="spacer"></span>
+          <button id="ov-mode" type="button" class="ghost-btn sm" aria-pressed="false" data-testid="swarm-overview-mode">Narrator’s page</button>
+        </div>
+        <div id="ov-frame" class="ov-frame hidden" data-testid="swarm-overview-frame"></div>
+        <div id="ov-plain" class="ov-plain hidden" data-testid="swarm-overview-plain"></div>
+        <footer id="ov-footer" class="ov-footer hidden" data-testid="swarm-overview-footer">
+          <div class="ov-hint">
+            <span aria-hidden="true">💡</span>
+            <span>Want this view different? Tell the coordinator.</span>
+            <button id="ov-open-coord" type="button" class="link-btn" data-testid="swarm-overview-open-coordinator">Open coordinator chat</button>
+          </div>
+          <div id="ov-ack" class="ov-ack hidden" data-testid="swarm-overview-ack"></div>
+        </footer>
+      </section>
+
+      <!-- Board -->
+      <section id="tab-feed" class="tab-body active" role="tabpanel" aria-labelledby="tabbtn-feed">
+        <div class="toolbar">
+          <div class="searchbar">
+            <label class="search">
+              <svg class="icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.25"/><path d="m10.25 10.25 3.25 3.25"/></svg>
+              <input id="f-search" type="search" placeholder="Search" aria-label="Search posts" autocomplete="off" data-testid="swarm-search">
+            </label>
+            <button id="f-toggle" type="button" class="icon-btn filter-toggle" aria-expanded="false" aria-controls="filters" title="Filters" aria-label="Filters" data-testid="swarm-filter-toggle">
+              <svg class="icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 4.5h11M4.5 8h7M6.5 11.5h3"/></svg>
+              <span class="filter-dot" aria-hidden="true"></span>
+            </button>
+          </div>
+          <!-- Channels: shown only once the swarm has a non-main channel. -->
+          <div id="channel-tabs" class="channel-tabs hidden" role="tablist" aria-label="Channels" data-testid="swarm-channel-tabs"></div>
+          <div id="filters" class="filters hidden" data-testid="swarm-filters">
+            <div class="toolbar-row">
+              <span class="select"><select id="f-agent" aria-label="Filter by poster" title="Show posts by one member"><option value="">From anyone</option></select></span>
+              <span class="select"><select id="f-mention" aria-label="Filter by recipient" title="Show posts that call on one member"><option value="">To anyone</option></select></span>
+              <span id="f-channel-wrap" class="select hidden"><select id="f-channel" aria-label="Filter by channel" title="Show posts in one channel" data-testid="swarm-channel-filter"><option value="">All channels</option></select></span>
+              <span class="spacer"></span>
+              <label class="switch" title="Keep the newest post in view">
+                <input type="checkbox" id="f-autoscroll" checked><span class="switch-track" aria-hidden="true"></span><span>Follow</span>
+              </label>
+            </div>
+            <div id="agents" class="agents" data-testid="swarm-agents" role="group" aria-label="Show or hide each member's posts"></div>
+          </div>
+        </div>
+        <div id="feed" class="feed" data-testid="swarm-feed" aria-live="polite" aria-relevant="additions"></div>
+        <button id="jump-latest" type="button" class="jump hidden" data-testid="swarm-jump-latest">
+          <svg class="icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v9.5M4 9l4 4 4-4"/></svg>Latest
+        </button>
+      </section>
+
+      <!-- Members -->
+      <section id="tab-members" class="tab-body" role="tabpanel" aria-labelledby="tabbtn-members">
+        <div id="members" class="members" data-testid="swarm-members" role="list"></div>
+      </section>
+
+      <!-- Graph -->
+      <section id="tab-graph" class="tab-body" role="tabpanel" aria-labelledby="tabbtn-graph">
+        <div class="player">
+          <div class="player-row">
+            <div class="btn-group" role="group" aria-label="Replay">
+              <button id="replay-start" type="button" class="icon-btn" title="Jump to start" aria-label="Jump to start">
+                <svg class="icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3.5v9"/><path class="fill" d="M12.5 3.8v8.4a.4.4 0 0 1-.62.33L6.3 8.33a.4.4 0 0 1 0-.66l5.58-4.2a.4.4 0 0 1 .62.33z"/></svg>
+              </button>
+              <button id="replay-back" type="button" class="icon-btn" title="Previous post (←)" aria-label="Previous post">
+                <svg class="icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3.5 5.5 8l4.5 4.5"/></svg>
+              </button>
+              <button id="replay-play" type="button" class="icon-btn play" title="Play / pause replay (space)" aria-label="Play replay" data-testid="swarm-replay-play"></button>
+              <button id="replay-fwd" type="button" class="icon-btn" title="Next post (→)" aria-label="Next post">
+                <svg class="icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5"/></svg>
+              </button>
+            </div>
+            <input id="replay-slider" class="slider" type="range" min="0" max="0" value="0" aria-label="Replay position" title="Scrub through board posts">
+            <button id="replay-live" type="button" class="pill-btn on" title="Show everything and follow live" aria-pressed="true"><span class="live-dot" aria-hidden="true"></span>Live</button>
+          </div>
+          <div class="player-row sub">
+            <span id="replay-label" class="replay-label"></span>
+            <span class="spacer"></span>
+            <div class="segmented" role="group" aria-label="Graph view">
+              <button type="button" id="gview-hive" data-gview="hive" class="gview-btn on" aria-pressed="true" title="Threads as cells, with each worker where it works">Hive</button>
+              <button type="button" id="gview-mentions" data-gview="mentions" class="gview-btn" aria-pressed="false" title="Who @mentions whom">Mentions</button>
+            </div>
+            <label class="switch" title="Hide killed and inactive members from the graph">
+              <input type="checkbox" id="g-hide-inactive" data-testid="swarm-graph-hide-inactive"><span class="switch-track" aria-hidden="true"></span><span>Hide inactive</span>
+            </label>
+            <label class="switch" title="Draw @all as an edge to every member">
+              <input type="checkbox" id="g-all"><span class="switch-track" aria-hidden="true"></span><span>Expand @all</span>
+            </label>
+            <span class="select sm"><select id="replay-timing" aria-label="Replay pacing" title="Replay pacing">
+              <option value="even">Even pacing</option>
+              <option value="real">Real-time gaps</option>
+            </select></span>
+            <span class="select sm"><select id="replay-speed" aria-label="Replay speed" title="Replay speed">
+              <option value="0.5">0.5×</option>
+              <option value="1" selected>1×</option>
+              <option value="2">2×</option>
+              <option value="4">4×</option>
+              <option value="8">8×</option>
+            </select></span>
+            <button id="graph-export-gif" type="button" class="ghost-btn sm export-gif-btn" title="Export graph replay as an animated GIF" data-testid="swarm-graph-export-gif">
+              <svg class="icon" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v7.5M5 7.5 8 10.5l3-3"/><path d="M3 12.5h10"/></svg><span id="graph-export-gif-label">Export GIF</span>
+            </button>
+          </div>
+        </div>
+        <div id="hive" data-testid="swarm-hive"></div>
+        <svg id="graph" class="graph" data-testid="swarm-graph" preserveAspectRatio="xMidYMin meet" role="img" aria-label="Who @mentions whom"></svg>
+        <div class="graph-legend" aria-hidden="true">
+          <span class="legend-item"><svg width="22" height="8" viewBox="0 0 24 8"><path d="M1 4h18" class="lg-solid"/><path d="M17 1l5 3-5 3z" class="lg-head"/></svg>@mention, width = count</span>
+          <span class="legend-item"><svg width="22" height="8" viewBox="0 0 24 8"><path d="M1 4h18" class="lg-dash"/><path d="M17 1l5 3-5 3z" class="lg-head"/></svg>via @all</span>
+          <span class="legend-item"><svg width="16" height="10" viewBox="0 0 16 10"><rect x="1" y="1" width="14" height="8" rx="4" class="lg-ring"/></svg>posted with no mention</span>
+          <span class="legend-item"><span class="lg-bcast">@all 2</span>@all posts, drawn by Expand @all</span>
+        </div>
+        <div id="replay-caption" class="msg replay-caption hidden" aria-live="polite"></div>
+      </section>
+
+      <!-- Raw -->
+      <section id="tab-raw" class="tab-body" role="tabpanel" aria-labelledby="tabbtn-raw">
+        <div class="raw-toolbar">
+          <div class="segmented" role="group" aria-label="File">
+            <button type="button" data-raw="members" class="raw-btn on" aria-pressed="true">members.json</button>
+            <button type="button" data-raw="board" class="raw-btn" aria-pressed="false">board.jsonl</button>
+            <button type="button" id="raw-btn-view" data-raw="view" class="raw-btn hidden" aria-pressed="false">view.json</button>
+          </div>
+          <span class="spacer"></span>
+          <button id="raw-copy" type="button" class="ghost-btn" title="Copy to clipboard" data-testid="swarm-raw-copy">
+            <svg class="icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 5.5v-1.5a1.5 1.5 0 0 0-1.5-1.5H4a1.5 1.5 0 0 0-1.5 1.5v5A1.5 1.5 0 0 0 4 10.5h1.5"/></svg><span id="raw-copy-label">Copy</span>
+          </button>
+        </div>
+        <div id="raw-meta" class="raw-meta"></div>
+        <pre id="raw" class="raw" data-testid="swarm-raw" tabindex="0"></pre>
+      </section>
+    </main>
+  </div>
+
+  <section id="empty" class="empty hidden" data-testid="swarm-empty-state" aria-labelledby="empty-title">
+    <div class="empty-card">
+      <svg class="empty-icon" width="56" height="56" viewBox="0 0 96 96" aria-hidden="true">
+        <g class="links">
+          <line x1="48" y1="26" x2="25" y2="66"/>
+          <line x1="48" y1="26" x2="71" y2="66"/>
+          <line x1="25" y1="66" x2="71" y2="66"/>
+        </g>
+        <circle class="node" cx="48" cy="26" r="9"/>
+        <circle class="node" cx="25" cy="66" r="8"/>
+        <circle class="node" cx="71" cy="66" r="8"/>
+      </svg>
+      <h2 id="empty-title" class="empty-title" data-testid="swarm-empty-title">No swarm in this conversation</h2>
+      <p id="empty-body" class="empty-body" data-testid="swarm-empty-body"></p>
+      <p class="empty-hint"><span class="live-dot" aria-hidden="true"></span>Watching for a swarm</p>
+    </div>
+  </section>
+
+  <div id="gif-modal" class="gif-modal hidden" role="dialog" aria-modal="true" aria-labelledby="gif-modal-title" data-testid="swarm-gif-modal">
+    <div class="gif-modal-card">
+      <div class="gif-modal-head">
+        <div class="gif-modal-titles">
+          <div id="gif-modal-title" class="gif-modal-title"></div>
+          <div id="gif-modal-meta" class="gif-modal-meta"></div>
+        </div>
+        <button id="gif-modal-close" type="button" class="icon-btn" aria-label="Close preview" title="Close" data-testid="swarm-gif-modal-close">
+          <svg class="icon" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+        </button>
+      </div>
+      <div class="gif-modal-body">
+        <img id="gif-modal-img" class="gif-modal-img" alt="Exported swarm graph replay" data-testid="swarm-gif-modal-img">
+      </div>
+      <div class="gif-modal-foot">
+        <span class="gif-modal-hint">Right-click image to save, or open in a new tab.</span>
+        <span class="spacer"></span>
+        <a id="gif-modal-open" class="ghost-btn sm" target="_blank" rel="noopener" data-testid="swarm-gif-modal-open">Open in new tab</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden" role="status" aria-live="polite" data-testid="swarm-toast"></div>
+
+  <script src="/gif.js"></script>
+  <script src="/hive.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>
